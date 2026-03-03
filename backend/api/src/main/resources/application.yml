@@ -31,3 +31,12 @@ logging:
   level:
     org.springframework.boot.autoconfigure.jdbc: INFO
     com.zaxxer.hikari: INFO
+
+opsflow:
+  security:
+    jwt:
+      issuer: opsflow
+      secret: 
+      accessTokenTtlMinutes: 15
+      refreshTokenTtlDays: 30
+

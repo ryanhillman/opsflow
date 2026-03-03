@@ -19,9 +19,13 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
+                .httpBasic(b -> b.disable())
+                .formLogin(f -> f.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/error",
+                                "/favicon.ico",
                                 "/actuator/health",
                                 "/actuator/info",
                                 "/actuator/prometheus",

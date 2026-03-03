@@ -29,5 +29,5 @@ management:
         include: health,info,prometheus
 logging:
   level:
-    org.springframework.boot.autoconfigure.jdbc: DEBUG
-    com.zaxxer.hikari: DEBUG
+    org.springframework.boot.autoconfigure.jdbc: INFO
+    com.zaxxer.hikari: INFO

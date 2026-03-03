@@ -19,8 +19,6 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
-                .httpBasic(b -> b.disable())
-                .formLogin(f -> f.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
@@ -29,7 +27,8 @@ public class SecurityConfig {
                                 "/actuator/health",
                                 "/actuator/info",
                                 "/actuator/prometheus",
-                                "/api/v1/auth/**"
+                                "/api/v1/auth/**",
+                                "/internal/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

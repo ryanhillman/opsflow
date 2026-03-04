@@ -3,6 +3,7 @@ package com.opsflow.api.app;
 import com.opsflow.api.common.web.JwtAuthFilter;
 import com.opsflow.api.common.web.JwtService;
 import com.opsflow.api.common.web.RequestContextFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -35,6 +36,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/sse/**").authenticated()
 
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((req, res, e) ->
+                                res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"))
                 )
                 .addFilterBefore(new JwtAuthFilter(jwtService), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(new RequestContextFilter(), JwtAuthFilter.class)

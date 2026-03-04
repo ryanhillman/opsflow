@@ -95,6 +95,11 @@ async function request<T>(
   throw new ApiError("Request failed", res.status, await parseJsonSafe(res));
 }
 
+/** Shared refresh — deduplicates concurrent calls. Throws if refresh fails (tokens already cleared). */
+export function refreshToken() {
+  return doRefresh();
+}
+
 export const api = {
   get<T>(path: string) {
     return request<T>(path, { method: "GET" });

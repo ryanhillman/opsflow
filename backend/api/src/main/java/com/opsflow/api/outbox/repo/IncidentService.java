@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
@@ -64,6 +66,17 @@ public class IncidentService {
         outboxRepo.save(OutboxEventEntity.create(orgId, "INCIDENT", incident.getId(), "INCIDENT_CREATED", payload));
 
         return new Result(incident.getId());
+    }
+
+    public List<IncidentEntity> list() {
+        var orgId = RequestContextHolder.get().orgId();
+        return incidentRepo.findAllByOrgId(orgId);
+    }
+
+    public IncidentEntity getById(UUID id) {
+        var orgId = RequestContextHolder.get().orgId();
+        return incidentRepo.findByIdAndOrgId(id, orgId)
+                .orElseThrow(() -> new NoSuchElementException("incident not found"));
     }
 
     public record Result(UUID incidentId) {}

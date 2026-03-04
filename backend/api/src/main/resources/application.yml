@@ -1,5 +1,8 @@
-server:
+sserver:
   port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
 
 spring:
   application:
@@ -42,3 +45,5 @@ opsflow:
       accessTokenTtlMinutes: 15
       refreshTokenTtlDays: 30
 
+  internal:
+    token: dev-internal-token

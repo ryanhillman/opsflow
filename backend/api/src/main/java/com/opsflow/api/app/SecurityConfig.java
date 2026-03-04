@@ -30,6 +30,10 @@ public class SecurityConfig {
                                 "/api/v1/auth/**",
                                 "/internal/**"
                         ).permitAll()
+
+                        // allow authenticated SSE stream
+                        .requestMatchers("/api/v1/sse/**").authenticated()
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtAuthFilter(jwtService), UsernamePasswordAuthenticationFilter.class)

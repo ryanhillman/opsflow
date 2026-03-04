@@ -1,0 +1,22 @@
+server:
+  port: 0
+
+spring:
+  application:
+    name: opsflow-worker
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/opsflow
+    username: opsflow
+    password: opsflow
+
+opsflow:
+  worker:
+    pollIntervalMs: 500
+    batchSize: 25
+    lockTtlSeconds: 300
+    backoffSeconds: 10
+
+  api:
+    baseUrl: http://localhost:8080
+    internalToken: dev-internal-token

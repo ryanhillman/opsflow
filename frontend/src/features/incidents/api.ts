@@ -33,3 +33,15 @@ export function getIncident(id: string) {
 export function createIncident(req: CreateIncidentRequest) {
   return api.post<CreateIncidentResponse>(base, req);
 }
+
+export function ackIncident(id: string) {
+  return api.post<void>(`${base}/${id}/ack`, {});
+}
+
+export function resolveIncident(id: string) {
+  return api.post<void>(`${base}/${id}/resolve`, {});
+}
+
+export function changeSeverity(id: string, severity: string) {
+  return api.post<void>(`${base}/${id}/severity`, { severity });
+}

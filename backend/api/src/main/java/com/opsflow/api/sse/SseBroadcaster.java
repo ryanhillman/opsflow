@@ -57,7 +57,7 @@ public class SseBroadcaster {
   }
 
   public void heartbeat(UUID orgId) {
-    broadcast(orgId, SseEnvelopeV1.of(orgId, "system.heartbeat", new Object()));
+    broadcast(orgId, SseEnvelopeV1.ofNow(orgId, "system.heartbeat", new Object()));
   }
 
   public int active(UUID orgId) {

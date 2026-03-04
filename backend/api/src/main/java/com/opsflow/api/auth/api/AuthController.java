@@ -126,7 +126,7 @@ public class AuthController {
     }
 
     private static OrgMembership chooseOrg(List<OrgMembership> memberships, String requestedOrgId) {
-        if (memberships.size() == 1) return memberships.getFirst();
+        if (memberships.size() == 1) return memberships.get(0);
 
         if (requestedOrgId == null || requestedOrgId.isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "orgId required");

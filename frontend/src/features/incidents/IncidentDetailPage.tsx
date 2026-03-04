@@ -1,45 +1,64 @@
 import { useEffect, useState } from "react";
-import type { CSSProperties } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getIncident, ackIncident, resolveIncident, changeSeverity } from "./api";
 import type { IncidentDto } from "./api";
 import { TimelinePanel } from "../timeline/TimelinePanel";
+import { SeverityChip, StatusChip } from "../../shared/ui/chips";
+import { useToast } from "../../app/providers/ToastProvider";
 
-function actionBtn(disabled: boolean): CSSProperties {
-  return {
-    padding: "5px 14px",
-    borderRadius: 8,
-    border: "1px solid #d1d5db",
-    background: disabled ? "#f9f9f9" : "#fff",
-    color: disabled ? "#aaa" : "#374151",
-    fontSize: 13,
-    fontWeight: 500,
-    cursor: disabled ? "not-allowed" : "pointer",
-    lineHeight: 1.5,
-    whiteSpace: "nowrap",
-  };
+function DetailSkeleton() {
+  return (
+    <>
+      <section className="card">
+        <div className="cardHeader">
+          <div className="skeleton" style={{ height: 18, width: "45%", borderRadius: 4 }} />
+          <div className="row" style={{ gap: 6, marginTop: 10 }}>
+            <div className="skeleton" style={{ height: 18, width: 44, borderRadius: 4 }} />
+            <div className="skeleton" style={{ height: 18, width: 60, borderRadius: 4 }} />
+            <div className="skeleton" style={{ height: 14, width: 120, borderRadius: 4 }} />
+          </div>
+          <div className="skeleton" style={{ height: 12, width: "30%", borderRadius: 4, marginTop: 10 }} />
+        </div>
+      </section>
+
+      <section className="card">
+        <div className="cardBody" style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+          <div className="skeleton" style={{ height: 32, width: 110, borderRadius: 8 }} />
+          <div className="skeleton" style={{ height: 32, width: 80, borderRadius: 8 }} />
+          <div className="skeleton" style={{ height: 32, width: 90, borderRadius: 8 }} />
+        </div>
+      </section>
+
+      <section className="card">
+        <div className="cardBody">
+          <div className="skeleton" style={{ height: 14, width: "30%", borderRadius: 4, marginBottom: 14 }} />
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="skeleton" style={{ height: 58, borderRadius: 8, marginBottom: 8 }} />
+          ))}
+        </div>
+      </section>
+    </>
+  );
 }
 
 export function IncidentDetailPage() {
   const { id } = useParams();
+  const toast = useToast();
+
   const [item, setItem] = useState<IncidentDto | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [ackLoading, setAckLoading] = useState(false);
   const [resolveLoading, setResolveLoading] = useState(false);
   const [sevLoading, setSevLoading] = useState(false);
-  const [actionError, setActionError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
-
     (async () => {
       setIsLoading(true);
       setError(null);
-
       try {
-        const data = await getIncident(id);
-        setItem(data);
+        setItem(await getIncident(id));
       } catch (e: any) {
         setError(e?.message ?? "Failed to load incident");
       } finally {
@@ -48,136 +67,140 @@ export function IncidentDetailPage() {
     })();
   }, [id]);
 
-  async function runAction(fn: () => Promise<void>, setLoading: (v: boolean) => void) {
+  async function runAction(
+    fn: () => Promise<void>,
+    setLoading: (v: boolean) => void,
+    successMsg: string
+  ) {
     if (!id) return;
     setLoading(true);
-    setActionError(null);
     try {
       await fn();
-      const updated = await getIncident(id);
-      setItem(updated);
+      setItem(await getIncident(id));
+      toast.success(successMsg);
     } catch (e: any) {
-      setActionError(e?.message ?? "Action failed");
+      toast.error(e?.message ?? "Action failed");
     } finally {
       setLoading(false);
     }
   }
 
-  return (
-    <div style={{ display: "grid", gap: 16 }}>
-      {/* Header */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <div>
-          <h1 style={{ marginBottom: 6 }}>Incident</h1>
-          <div style={{ fontSize: 12, color: "#666" }}>{id}</div>
-        </div>
+  const actionBtnStyle = (disabled: boolean) => ({
+    padding: "6px 14px",
+    borderRadius: 8,
+    border: "1px solid var(--border)",
+    background: disabled ? "var(--bg)" : "#fff",
+    color: disabled ? "var(--muted)" : "var(--text)",
+    fontSize: 13,
+    fontWeight: 500,
+    cursor: disabled ? "not-allowed" : "pointer",
+    whiteSpace: "nowrap" as const,
+    transition: "transform 0.12s, box-shadow 0.12s",
+  });
 
-        <Link to="/app/incidents">← Back</Link>
+  return (
+    <div className="container" style={{ display: "grid", gap: 16 }}>
+      {/* Page header */}
+      <div className="row space">
+        <div>
+          <h1 className="h1">Incident</h1>
+          <div className="subtle">{id}</div>
+        </div>
+        <Link
+          to="/app/incidents"
+          className="btnGhost"
+          style={{ padding: "5px 14px", fontSize: 13 }}
+        >
+          ← Back
+        </Link>
       </div>
 
       {isLoading ? (
-        <div>Loading…</div>
+        <DetailSkeleton />
       ) : error ? (
-        <div style={{ color: "crimson" }}>{error}</div>
+        <div
+          style={{
+            padding: "12px 16px",
+            borderRadius: 10,
+            background: "#fef2f2",
+            border: "1px solid #fecaca",
+            color: "#991b1b",
+            fontSize: 13,
+          }}
+        >
+          {error}
+        </div>
       ) : !item ? (
-        <div>Not found</div>
+        <div className="emptyState">
+          <div className="emptyIcon">🔍</div>
+          <div className="emptyTitle">Incident not found</div>
+          <div className="emptySubtitle">It may have been deleted or the ID is incorrect.</div>
+        </div>
       ) : (
         <>
-          {/* Incident Summary */}
-          <div
-            style={{
-              border: "1px solid #e6e6e6",
-              borderRadius: 12,
-              padding: 16,
-            }}
-          >
-            <div style={{ fontWeight: 750, fontSize: 18 }}>{item.title}</div>
-
-            <div style={{ marginTop: 8, color: "#555" }}>
-              {item.severity}
-              {item.status ? ` • ${item.status}` : ""}
-              {" • Service "}
-              {item.serviceId}
-            </div>
-
-            {item.createdAt && (
-              <div style={{ marginTop: 8, fontSize: 12, color: "#777" }}>
-                {item.createdAt}
+          {/* Summary */}
+          <section className="card">
+            <div className="cardHeader">
+              <div style={{ fontWeight: 750, fontSize: 16, lineHeight: 1.3 }}>{item.title}</div>
+              <div className="row" style={{ gap: 6, marginTop: 8, flexWrap: "wrap" }}>
+                <SeverityChip severity={item.severity} />
+                {item.status && <StatusChip status={item.status} />}
+                {item.createdAt && (
+                  <span className="subtle" style={{ fontSize: 12 }}>
+                    {new Date(item.createdAt).toLocaleString()}
+                  </span>
+                )}
               </div>
-            )}
-          </div>
+              <div className="subtle" style={{ marginTop: 6, fontSize: 12 }}>
+                Service: {item.serviceId}
+              </div>
+            </div>
+          </section>
 
-          {/* Actions row */}
-          <div
-            style={{
-              border: "1px solid #e6e6e6",
-              borderRadius: 12,
-              padding: "12px 16px",
-              display: "flex",
-              justifyContent: "flex-end",
-              alignItems: "center",
-              gap: 8,
-              flexWrap: "wrap",
-            }}
-          >
-            {actionError && (
-              <span
-                style={{ fontSize: 12, color: "crimson", marginRight: "auto" }}
+          {/* Actions */}
+          <section className="card">
+            <div
+              className="cardBody"
+              style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 8, flexWrap: "wrap" }}
+            >
+              <button
+                style={actionBtnStyle(ackLoading || item.status !== "OPEN")}
+                disabled={ackLoading || item.status !== "OPEN"}
+                onClick={() => runAction(() => ackIncident(id!), setAckLoading, "Acknowledged")}
               >
-                {actionError}
-              </span>
-            )}
+                {ackLoading ? "Acknowledging…" : "Acknowledge"}
+              </button>
 
-            <button
-              style={actionBtn(ackLoading || item.status !== "OPEN")}
-              disabled={ackLoading || item.status !== "OPEN"}
-              onClick={() => runAction(() => ackIncident(id!), setAckLoading)}
-            >
-              {ackLoading ? "Acknowledging…" : "Acknowledge"}
-            </button>
+              <button
+                style={actionBtnStyle(resolveLoading || item.status === "RESOLVED")}
+                disabled={resolveLoading || item.status === "RESOLVED"}
+                onClick={() => runAction(() => resolveIncident(id!), setResolveLoading, "Resolved")}
+              >
+                {resolveLoading ? "Resolving…" : "Resolve"}
+              </button>
 
-            <button
-              style={actionBtn(resolveLoading || item.status === "RESOLVED")}
-              disabled={resolveLoading || item.status === "RESOLVED"}
-              onClick={() =>
-                runAction(() => resolveIncident(id!), setResolveLoading)
-              }
-            >
-              {resolveLoading ? "Resolving…" : "Resolve"}
-            </button>
-
-            <select
-              style={{
-                padding: "5px 10px",
-                borderRadius: 8,
-                border: "1px solid #d1d5db",
-                background: sevLoading ? "#f9f9f9" : "#fff",
-                color: sevLoading ? "#aaa" : "#374151",
-                fontSize: 13,
-                cursor: sevLoading ? "not-allowed" : "pointer",
-              }}
-              disabled={sevLoading}
-              value={item.severity}
-              onChange={(e) =>
-                runAction(() => changeSeverity(id!, e.target.value), setSevLoading)
-              }
-            >
-              {["SEV1", "SEV2", "SEV3", "SEV4"].map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-          </div>
+              <select
+                className="select"
+                style={{ width: "auto", padding: "6px 10px", fontSize: 13 }}
+                disabled={sevLoading}
+                value={item.severity}
+                onChange={(e) =>
+                  runAction(() => changeSeverity(id!, e.target.value), setSevLoading, "Severity updated")
+                }
+              >
+                {["SEV1", "SEV2", "SEV3", "SEV4"].map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
+          </section>
 
           {/* Live Timeline */}
-          {id && <TimelinePanel incidentId={id} />}
+          {id && (
+            <section className="card">
+              <TimelinePanel incidentId={id} />
+            </section>
+          )}
         </>
       )}
     </div>

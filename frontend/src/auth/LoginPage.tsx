@@ -24,60 +24,81 @@ export function LoginPage() {
         "/api/v1/auth/login",
         { email, password, orgId: DEV_ORG_ID }
       );
-
       setTokens(res.accessToken, res.refreshToken);
       nav("/app/incidents");
     } catch (err: any) {
-      setError(err?.message ?? "Login failed");
+      setError(err?.message ?? "Invalid email or password");
     } finally {
       setIsLoading(false);
     }
   }
 
   return (
-    <div style={{ padding: 24, maxWidth: 420 }}>
-      <h1>Login</h1>
-      <p style={{ color: "#555" }}>Sign in to OpsFlow</p>
+    <div className="loginWrap">
+      <div className="loginCard card">
+        <div className="cardHeader" style={{ textAlign: "center", paddingBottom: 20 }}>
+          <div style={{ fontWeight: 750, fontSize: 20, letterSpacing: "-0.3px" }}>OpsFlow</div>
+          <div className="subtle" style={{ marginTop: 4 }}>Sign in to your workspace</div>
+        </div>
 
-      <form onSubmit={onSubmit} style={{ display: "grid", gap: 12, marginTop: 16 }}>
-        <label>
-          <div style={{ fontSize: 12, marginBottom: 6 }}>Email</div>
-          <input
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            autoComplete="username"
-            style={{ width: "100%", padding: 10, borderRadius: 8, border: "1px solid #ddd" }}
-          />
-        </label>
+        <div className="cardBody">
+          <form onSubmit={onSubmit} style={{ display: "grid", gap: 14 }}>
+            <label>
+              <div className="subtle" style={{ marginBottom: 6 }}>Email</div>
+              <input
+                className="input"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                autoComplete="username"
+                required
+              />
+            </label>
 
-        <label>
-          <div style={{ fontSize: 12, marginBottom: 6 }}>Password</div>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="current-password"
-            style={{ width: "100%", padding: 10, borderRadius: 8, border: "1px solid #ddd" }}
-          />
-        </label>
+            <label>
+              <div className="subtle" style={{ marginBottom: 6 }}>Password</div>
+              <input
+                className="input"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                autoComplete="current-password"
+                required
+              />
+            </label>
 
-        {error && <div style={{ color: "crimson", fontSize: 13 }}>{error}</div>}
+            {error && (
+              <div
+                style={{
+                  padding: "8px 12px",
+                  borderRadius: 8,
+                  background: "#fef2f2",
+                  border: "1px solid #fecaca",
+                  color: "#991b1b",
+                  fontSize: 13,
+                }}
+              >
+                {error}
+              </div>
+            )}
 
-        <button
-          type="submit"
-          disabled={isLoading}
-          style={{
-            padding: 10,
-            borderRadius: 10,
-            border: "1px solid #222",
-            background: isLoading ? "#f2f2f2" : "#222",
-            color: isLoading ? "#222" : "white",
-            cursor: isLoading ? "default" : "pointer",
-          }}
-        >
-          {isLoading ? "Signing in..." : "Sign in"}
-        </button>
-      </form>
+            <button
+              type="submit"
+              className="btn"
+              disabled={isLoading}
+              style={{ width: "100%", marginTop: 2 }}
+            >
+              {isLoading ? "Signing in…" : "Sign in"}
+            </button>
+          </form>
+
+          <div className="subtle" style={{ marginTop: 20, textAlign: "center", fontSize: 12 }}>
+            Dev workspace · Org {DEV_ORG_ID.slice(0, 8)}…
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

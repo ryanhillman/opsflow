@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useTimelineSse } from "./useTimelineSse";
 import { formatEvent } from "./format";
+import { SeverityChip, StatusChip } from "../../shared/ui/chips";
 
 const SYSTEM_TYPES = new Set(["system.connected", "system.heartbeat"]);
 
@@ -14,38 +15,6 @@ const KNOWN_TYPES = new Set([
   "timeline.incident.severity_changed",
   "timeline.incident.resolved",
 ]);
-
-const SEV_COLORS: Record<string, { bg: string; color: string }> = {
-  SEV1: { bg: "#fed7d7", color: "#c53030" },
-  SEV2: { bg: "#feebc8", color: "#c05621" },
-  SEV3: { bg: "#fefcbf", color: "#975a16" },
-  SEV4: { bg: "#bee3f8", color: "#2b6cb0" },
-};
-
-const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
-  OPEN:       { bg: "#fed7d7", color: "#c53030" },
-  MITIGATING: { bg: "#feebc8", color: "#c05621" },
-  RESOLVED:   { bg: "#c6f6d5", color: "#276749" },
-};
-
-function Badge({ label, colors }: { label: string; colors: { bg: string; color: string } }) {
-  return (
-    <span
-      style={{
-        display: "inline-block",
-        padding: "1px 7px",
-        borderRadius: 6,
-        fontSize: 11,
-        fontWeight: 600,
-        letterSpacing: "0.02em",
-        background: colors.bg,
-        color: colors.color,
-      }}
-    >
-      {label}
-    </span>
-  );
-}
 
 function fmtTime(ts: string) {
   try {
@@ -91,31 +60,21 @@ export function TimelinePanel({ incidentId }: { incidentId: string }) {
   }
 
   return (
-    <div style={{ border: "1px solid #e6e6e6", borderRadius: 12, padding: 16 }}>
+    <div className="cardBody">
       {/* Header */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "baseline",
-        }}
-      >
+      <div className="row space" style={{ alignItems: "baseline", marginBottom: 12 }}>
         <div style={{ fontWeight: 650 }}>Timeline (live)</div>
-        <div style={{ fontSize: 12, color: status === "open" ? "#38a169" : "#666" }}>
-          {status === "open"
-            ? "● Live"
-            : status === "connecting"
-              ? "Connecting…"
-              : status}
+        <div style={{ fontSize: 12, color: status === "open" ? "#38a169" : "var(--muted)" }}>
+          {status === "open" ? "● Live" : status === "connecting" ? "Connecting…" : status}
         </div>
       </div>
 
       {error && (
-        <div style={{ marginTop: 8, color: "crimson", fontSize: 13 }}>{error}</div>
+        <div style={{ marginBottom: 8, color: "crimson", fontSize: 13 }}>{error}</div>
       )}
 
       {/* Event list */}
-      <div style={{ marginTop: 12, display: "grid", gap: 8 }}>
+      <div style={{ display: "grid", gap: 8 }}>
         {filtered.length === 0 ? (
           <div style={{ color: "#777", fontSize: 13 }}>
             No events for this incident yet.
@@ -126,8 +85,6 @@ export function TimelinePanel({ incidentId }: { incidentId: string }) {
             const domainType = (e.data as any)?.type ?? e.type;
             const isUnknown = !KNOWN_TYPES.has(domainType);
             const isExpanded = expanded.has(e.id);
-            const sevColors = fmt.severity ? SEV_COLORS[fmt.severity] : null;
-            const statusColors = fmt.status ? STATUS_COLORS[fmt.status] : null;
 
             return (
               <div
@@ -177,21 +134,10 @@ export function TimelinePanel({ incidentId }: { incidentId: string }) {
                           {fmt.subtitle}
                         </div>
                       )}
-                      {(sevColors || statusColors) && (
-                        <div
-                          style={{
-                            display: "flex",
-                            gap: 5,
-                            marginTop: 5,
-                            flexWrap: "wrap",
-                          }}
-                        >
-                          {sevColors && (
-                            <Badge label={fmt.severity!} colors={sevColors} />
-                          )}
-                          {statusColors && (
-                            <Badge label={fmt.status!} colors={statusColors} />
-                          )}
+                      {(fmt.severity || fmt.status) && (
+                        <div style={{ display: "flex", gap: 5, marginTop: 5, flexWrap: "wrap" }}>
+                          {fmt.severity && <SeverityChip severity={fmt.severity} />}
+                          {fmt.status && <StatusChip status={fmt.status} />}
                         </div>
                       )}
                     </div>

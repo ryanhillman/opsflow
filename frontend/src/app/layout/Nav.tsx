@@ -1,22 +1,58 @@
-﻿import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../providers/AuthProvider";
+
+const DEV_ORG_ID = "00000000-0000-0000-0000-000000000001";
+const DEV_ORG_LABEL = "Dev Org";
+
+function emailFromToken(token: string | null): string {
+  if (!token) return "";
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.sub ?? payload.email ?? "";
+  } catch {
+    return "";
+  }
+}
 
 export function Nav() {
-  return (
-    <aside className="appNav">
-      <div className="brand">OpsFlow</div>
+  const { logout, accessToken } = useAuth();
+  const nav = useNavigate();
+  const email = emailFromToken(accessToken);
 
-      <nav className="navLinks">
+  function handleLogout() {
+    logout();
+    nav("/login", { replace: true });
+  }
+
+  return (
+    <header className="appTopbar">
+      <div className="topbarBrand">OpsFlow</div>
+
+      <div className="topbarOrg">
+        {DEV_ORG_LABEL}
+        <span style={{ marginLeft: 6, opacity: 0.6, fontFamily: "monospace", fontSize: 11 }}>
+          {DEV_ORG_ID}
+        </span>
+      </div>
+
+      <nav className="topbarNav">
         <NavLink to="/app/incidents" className={({ isActive }) => (isActive ? "active" : "")}>
           Incidents
         </NavLink>
-        <a className="disabled" title="Coming soon">
+        <a className="disabled" aria-disabled="true" title="Coming soon">
+          Services
+        </a>
+        <a className="disabled" aria-disabled="true" title="Coming soon">
           Runbooks
         </a>
       </nav>
 
-      <div className="navFooter">
-        <div className="orgPill">Org: (soon)</div>
+      <div className="topbarUser">
+        {email && <span className="subtle" style={{ fontSize: 12 }}>{email}</span>}
+        <button type="button" className="btnGhost" style={{ padding: "5px 12px", fontSize: 13 }} onClick={handleLogout}>
+          Logout
+        </button>
       </div>
-    </aside>
+    </header>
   );
 }

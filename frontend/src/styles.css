@@ -1,0 +1,28 @@
+﻿:root { font-family: system-ui, Segoe UI, Arial, sans-serif; }
+
+.appShell {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+}
+
+.appNav {
+  border-right: 1px solid #e6e6e6;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.brand { font-weight: 700; font-size: 18px; }
+
+.navLinks { display: flex; flex-direction: column; gap: 8px; }
+.navLinks a { text-decoration: none; color: #222; padding: 8px 10px; border-radius: 8px; }
+.navLinks a.active { background: #f2f2f2; }
+.navLinks a.disabled { color: #888; cursor: not-allowed; }
+
+.navFooter { margin-top: auto; }
+.orgPill { font-size: 12px; color: #444; background: #f6f6f6; padding: 8px 10px; border-radius: 999px; display: inline-block; }
+
+.appMain { padding: 24px; }
+h1 { margin: 0 0 12px; }

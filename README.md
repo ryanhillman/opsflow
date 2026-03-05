@@ -1,4 +1,4 @@
-# OpsFlow
+## OpsFlow
 
 **OpsFlow** is a startup-style **incident management and runbook coordination platform** designed to showcase production-style SaaS architecture.
 
@@ -29,7 +29,7 @@ The platform uses **event-driven patterns and Server-Sent Events (SSE)** to simu
 
 OpsFlow follows a **multi-service architecture** with real-time streaming and background processing.
 
-System Architecture (container level):
+# System Architecture (container level):
 
 ```mermaid
 flowchart TD
@@ -57,7 +57,7 @@ flowchart TD
   W -. metrics .-> P
 ```
 
-Incident Event Flow (Outbox + Worker + SSE timeline):
+# Incident Event Flow (Outbox + Worker + SSE timeline):
 
 ```mermaid
 sequenceDiagram
@@ -285,6 +285,7 @@ Worker Service
 ```
 
 The reverse proxy handles routing between the frontend and API services.
+
 
 
 

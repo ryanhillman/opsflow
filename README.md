@@ -7,7 +7,9 @@ The project simulates a simplified version of tools like **PagerDuty** or **OpsG
 The system emphasizes **modern backend architecture, multi-tenant design, real-time event streaming, and containerized deployment**.
 
 Live Demo: http://3.238.146.215 
+
 Username: you@example.com
+
 Password: devpass123
 
 ---
@@ -306,3 +308,4 @@ docker-compose.yml
 ```
 
 This project is intended for **educational and portfolio demonstration purposes**.
+

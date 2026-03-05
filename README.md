@@ -284,25 +284,5 @@ Worker Service
 
 The reverse proxy handles routing between the frontend and API services.
 
----
-
-# Repository Structure
-
-```
-backend/
- ├─ api/        # Spring Boot REST API
- └─ worker/     # Background processing service
-
-frontend/
- └─ React + Vite application
-
-docs/
- └─ Architecture notes and design documentation
-
-docker-compose.yml
- └─ Local development infrastructure
-```
-
-This project is intended for **educational and portfolio demonstration purposes**.
 
 

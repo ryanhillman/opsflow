@@ -3,6 +3,7 @@ import { LoginPage } from "../auth/LoginPage";
 import { AppLayout } from "./layout/AppLayout";
 import { IncidentsListPage } from "../features/incidents/IncidentsListPage";
 import { IncidentDetailPage } from "../features/incidents/IncidentDetailPage";
+import { ServicesPage } from "../features/services/ServicesPage";
 import { ProtectedRoute } from "./providers/ProtectedRoute";
 import { useAuth } from "./providers/AuthProvider";
 
@@ -28,6 +29,7 @@ export function AppRoutes() {
       >
         <Route path="incidents" element={<IncidentsListPage />} />
         <Route path="incidents/:id" element={<IncidentDetailPage />} />
+        <Route path="services" element={<ServicesPage />} />
       </Route>
 
       <Route path="*" element={<div style={{ padding: 24 }}>Not found</div>} />

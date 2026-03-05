@@ -119,6 +119,9 @@ public class OutboxPoller implements ApplicationRunner {
             // Map internal outbox event → SSE timeline event
             String sseType = switch (row.eventType()) {
                 case "INCIDENT_CREATED" -> "timeline.incident.created";
+                case "INCIDENT_ACKNOWLEDGED" -> "timeline.incident.acknowledged";
+                case "INCIDENT_RESOLVED" -> "timeline.incident.resolved";
+                case "INCIDENT_SEVERITY_CHANGED" -> "timeline.incident.severity_changed";
                 default -> row.eventType();
             };
 

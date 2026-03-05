@@ -39,9 +39,9 @@ export function Nav() {
         <NavLink to="/app/incidents" className={({ isActive }) => (isActive ? "active" : "")}>
           Incidents
         </NavLink>
-        <a className="disabled" aria-disabled="true" title="Coming soon">
+        <NavLink to="/app/services" className={({ isActive }) => (isActive ? "active" : "")}>
           Services
-        </a>
+        </NavLink>
         <a className="disabled" aria-disabled="true" title="Coming soon">
           Runbooks
         </a>

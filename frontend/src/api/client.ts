@@ -89,6 +89,12 @@ async function request<T>(
       return (await parseJsonSafe(retryRes)) as T;
     }
 
+    // Retry also failed — if still 401, clear tokens so ProtectedRoute redirects to login.
+    if (retryRes.status === 401) {
+      authStore.clearTokens();
+      throw new ApiError("Unauthorized", 401);
+    }
+
     throw new ApiError("Request failed after refresh", retryRes.status, await parseJsonSafe(retryRes));
   }
 

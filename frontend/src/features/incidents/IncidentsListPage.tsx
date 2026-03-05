@@ -64,13 +64,14 @@ export function IncidentsListPage() {
   const [filter, setFilter] = useState<FilterKey>("active");
 
   const [services, setServices] = useState<ServiceDto[]>([]);
+  const [servicesLoaded, setServicesLoaded] = useState(false);
   const [serviceId, setServiceId] = useState("");
   const [title, setTitle] = useState("");
   const [severity, setSeverity] = useState<"SEV1" | "SEV2" | "SEV3" | "SEV4">("SEV3");
   const [isCreating, setIsCreating] = useState(false);
 
   const canCreate = useMemo(
-    () => serviceId.trim().length > 0 && title.trim().length > 0 && !isCreating,
+    () => (serviceId ?? "").trim().length > 0 && title.trim().length > 0 && !isCreating,
     [serviceId, title, isCreating]
   );
 
@@ -115,10 +116,12 @@ export function IncidentsListPage() {
     load();
     listServices()
       .then((svcs) => {
-        setServices(svcs);
-        if (svcs.length > 0) setServiceId(svcs[0].id);
+        const list = Array.isArray(svcs) ? svcs : [];
+        setServices(list);
+        if (list.length > 0) setServiceId(list[0].id ?? "");
       })
-      .catch(() => {/* non-fatal */});
+      .catch(() => {/* non-fatal */})
+      .finally(() => setServicesLoaded(true));
   }, []);
 
   async function onCreate(e: React.FormEvent) {
@@ -132,6 +135,7 @@ export function IncidentsListPage() {
       await load();
       nav(`/app/incidents/${res.id}`);
     } catch (e: any) {
+      if (e?.status === 401) return;
       toast.error(e?.message ?? "Failed to create incident");
     } finally {
       setIsCreating(false);
@@ -167,9 +171,10 @@ export function IncidentsListPage() {
                 className="select"
                 value={serviceId}
                 onChange={(e) => setServiceId(e.target.value)}
-                disabled={services.length === 0}
+                disabled={!servicesLoaded || services.length === 0}
               >
-                {services.length === 0 && <option value="">Loading services…</option>}
+                {!servicesLoaded && <option value="">Loading services…</option>}
+                {servicesLoaded && services.length === 0 && <option value="">No services available</option>}
                 {services.map((s) => (
                   <option key={s.id} value={s.id}>{s.name}</option>
                 ))}

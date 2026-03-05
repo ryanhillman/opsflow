@@ -68,4 +68,10 @@ public class IncidentEntity {
     public UUID getCreatedBy() { return createdBy; }
     public Instant getCreatedAt() { return createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }
+    public Instant getResolvedAt() { return resolvedAt; }
+
+    public void setStatus(IncidentStatus status) { this.status = status; }
+    public void setSeverity(IncidentSeverity severity) { this.severity = severity; }
+    public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
+    public void setResolvedAt(Instant resolvedAt) { this.resolvedAt = resolvedAt; }
 }

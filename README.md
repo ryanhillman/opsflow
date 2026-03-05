@@ -33,23 +33,24 @@ System Architecture (container level):
 
 ```mermaid
 flowchart TD
-  U[User / Browser] -->|HTTPS| C[Caddy Reverse Proxy]
+  U[User Browser] -->|HTTPS| C[Caddy Reverse Proxy]
 
-  C -->|Serves static assets| FE[Frontend: React (Vite build)]
-  C -->|Routes /api/*| API[Backend: Spring Boot API]
-  C -->|Routes /sse/*| API
+  C -->|Serve static assets| FE[React Frontend]
+  C -->|Route API traffic| API[Spring Boot API]
+  C -->|Route SSE stream| API
 
-  FE -->|REST (JWT)| API
-  FE -->|SSE (live timeline)| API
+  FE -->|REST JWT| API
+  FE -->|SSE live updates| API
 
-  API -->|SQL| PG[(PostgreSQL)]
-  API -->|enqueue / rate-limit / cache| R[(Redis)]
+  API -->|SQL queries| PG[(PostgreSQL)]
+  API -->|Queue and cache| R[(Redis)]
 
-  W[Worker: Spring Boot Worker] -->|consume jobs / events| R
-  W -->|SQL| PG
+  W[Worker Service] -->|Consume jobs| R
+  W -->|Database access| PG
 
-  subgraph Observability [Local Observability]
-    P[Prometheus] --> G[Grafana]
+  subgraph Observability
+    P[Prometheus]
+    G[Grafana]
   end
 
   API -. metrics .-> P
@@ -283,6 +284,7 @@ Worker Service
 ```
 
 The reverse proxy handles routing between the frontend and API services.
+
 
 
 

@@ -60,7 +60,8 @@ export function IncidentDetailPage() {
       try {
         setItem(await getIncident(id));
       } catch (e: any) {
-        setError(e?.message ?? "Failed to load incident");
+        // 401 → ProtectedRoute handles redirect; don't set error UI.
+        if (e?.status !== 401) setError(e?.message ?? "Failed to load incident");
       } finally {
         setIsLoading(false);
       }
@@ -79,7 +80,7 @@ export function IncidentDetailPage() {
       setItem(await getIncident(id));
       toast.success(successMsg);
     } catch (e: any) {
-      toast.error(e?.message ?? "Action failed");
+      if (e?.status !== 401) toast.error(e?.message ?? "Action failed");
     } finally {
       setLoading(false);
     }

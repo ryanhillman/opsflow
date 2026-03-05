@@ -103,6 +103,8 @@ export function IncidentsListPage() {
       const data = await listIncidents();
       setItems(data);
     } catch (e: any) {
+      // 401 → auth was cleared; ProtectedRoute will redirect to login — no toast needed.
+      if (e?.status === 401) return;
       toast.error(e?.message ?? "Failed to load incidents");
     } finally {
       setIsLoading(false);

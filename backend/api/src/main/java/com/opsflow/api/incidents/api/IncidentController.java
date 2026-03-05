@@ -6,6 +6,7 @@ import com.opsflow.api.incidents.model.IncidentStatus;
 import com.opsflow.api.incidents.service.IncidentService;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -43,6 +44,8 @@ public class IncidentController {
 
     public record CreateIncidentResponse(UUID id) {}
 
+    public record ChangeSeverityRequest(@NotNull IncidentSeverity severity) {}
+
     @GetMapping
     public List<IncidentDto> list() {
         return incidentService.list().stream().map(IncidentDto::from).toList();
@@ -57,5 +60,23 @@ public class IncidentController {
     public CreateIncidentResponse create(@RequestBody CreateIncidentRequest req) {
         var r = incidentService.create(req.serviceId(), req.title(), req.severity());
         return new CreateIncidentResponse(r.incidentId());
+    }
+
+    @PostMapping("/{id}/ack")
+    public ResponseEntity<Void> ack(@PathVariable UUID id) {
+        incidentService.ack(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/resolve")
+    public ResponseEntity<Void> resolve(@PathVariable UUID id) {
+        incidentService.resolve(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/severity")
+    public ResponseEntity<Void> changeSeverity(@PathVariable UUID id, @RequestBody ChangeSeverityRequest req) {
+        incidentService.changeSeverity(id, req.severity());
+        return ResponseEntity.noContent().build();
     }
 }

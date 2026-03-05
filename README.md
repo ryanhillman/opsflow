@@ -200,19 +200,6 @@ sequenceDiagram
 
 ---
 
-# Screenshots
-
-*(Screenshots coming soon)*
-
-Suggested screenshots to include:
-
-* Incident dashboard
-* Incident timeline activity feed
-* Service catalog view
-* Login page
-
----
-
 # Local Development Setup
 
 The full stack can be run locally using Docker Compose.
@@ -285,6 +272,17 @@ Worker Service
 ```
 
 The reverse proxy handles routing between the frontend and API services.
+
+---
+
+# Screenshots
+
+## Login
+![Incident Dashboard](docs/docs/screenshots/Screenshot%20(13).png)
+
+## Incident Dashboard
+![Incident Timeline](docs/docs/screenshots/Screenshot%20(14).png)
+
 
 
 

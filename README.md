@@ -14,10 +14,6 @@ Password: devpass123
 
 ---
 
-# Project Overview
-
-OpsFlow is a **multi-tenant incident coordination platform** built to demonstrate how modern DevOps tooling platforms are architected.
-
 Teams can use OpsFlow to:
 
 * Track operational incidents
@@ -308,4 +304,5 @@ docker-compose.yml
 ```
 
 This project is intended for **educational and portfolio demonstration purposes**.
+
 

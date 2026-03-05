@@ -18,7 +18,7 @@ Live Demo: http://3.238.146.215
 
 Username: `you@example.com`
 
-Password: devpass123
+Password: `devpass123`
 
 ---
 
@@ -290,6 +290,7 @@ The reverse proxy handles routing between the frontend and API services.
 
 ## Incident Dashboard
 ![Incident Timeline](docs/docs/screenshots/Screenshot%20(14).png)
+
 
 
 

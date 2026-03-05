@@ -1,0 +1,58 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: opsflow
+      POSTGRES_PASSWORD: opsflow
+      POSTGRES_DB: opsflow
+    volumes:
+      - opsflow_pg:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - opsflow_redis:/data
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ./backend/api
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/opsflow
+      SPRING_DATASOURCE_USERNAME: opsflow
+      SPRING_DATASOURCE_PASSWORD: opsflow
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: ./backend/worker
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/opsflow
+      SPRING_DATASOURCE_USERNAME: opsflow
+      SPRING_DATASOURCE_PASSWORD: opsflow
+      OPSFLOW_API_BASEURL: http://api:8080
+    depends_on:
+      - postgres
+      - api
+    restart: unless-stopped
+
+  caddy:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  opsflow_pg:
+  opsflow_redis:

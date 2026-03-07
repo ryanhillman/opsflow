@@ -111,7 +111,7 @@ jobs:
           script: |
             max=36
             count=0
-            until curl -sf http://localhost:8080/actuator/health | grep -q '"status":"UP"'; do
+            until docker compose -f /opt/opsflow/docker-compose.prod.yml exec -T api curl -sf http://localhost:8080/actuator/health | grep -q '"status":"UP"'; do
               count=$((count + 1))
               if [ "$count" -ge "$max" ]; then
                 echo "ERROR: API did not become healthy after $((max * 5)) seconds"

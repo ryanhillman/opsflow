@@ -99,26 +99,34 @@ jobs:
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GHCR_USER: ${{ github.actor }}
 
-      # Health check runs on the VM against the local actuator endpoint to avoid
-      # depending on public DNS/Caddy routing. Retries for up to 3 minutes to
-      # allow Spring Boot to fully start. Prints API logs on failure.
+      # Health check polls the Docker-native health status (set via HEALTHCHECK in
+      # the api image) instead of exec-ing curl inside the container. This avoids
+      # the curl-not-found failure and works regardless of what tools are installed
+      # in the image. Retries for up to 3 minutes; dumps API logs on timeout.
       - name: Health check
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.LIGHTSAIL_HOST }}
           username: ${{ secrets.LIGHTSAIL_USER }}
           key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
+          envs: GHCR_OWNER,IMAGE_TAG
           script: |
+            export GHCR_OWNER="$GHCR_OWNER"
+            export IMAGE_TAG="$IMAGE_TAG"
+            cd /opt/opsflow
             max=36
             count=0
-            until docker compose -f /opt/opsflow/docker-compose.prod.yml exec -T api curl -sf http://localhost:8080/actuator/health | grep -q '"status":"UP"'; do
+            until [ "$(docker compose -f docker-compose.prod.yml ps -q api 2>/dev/null | xargs -r docker inspect --format='{{.State.Health.Status}}' 2>/dev/null)" = "healthy" ]; do
               count=$((count + 1))
               if [ "$count" -ge "$max" ]; then
                 echo "ERROR: API did not become healthy after $((max * 5)) seconds"
-                docker compose -f /opt/opsflow/docker-compose.prod.yml logs api --tail=50
+                docker compose -f docker-compose.prod.yml logs api --tail=50
                 exit 1
               fi
               echo "  attempt $count/$max — retrying in 5 s..."
               sleep 5
             done
             echo "API is UP"
+        env:
+          GHCR_OWNER: ${{ github.repository_owner }}
+          IMAGE_TAG: ${{ github.sha }}

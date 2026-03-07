@@ -5,7 +5,6 @@ on:
     branches: [main]
 
 jobs:
-<<<<<<< HEAD
   build-and-push:
     runs-on: ubuntu-latest
     permissions:
@@ -100,47 +99,26 @@ jobs:
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GHCR_USER: ${{ github.actor }}
 
-      # Spring Actuator health endpoint is exposed at /api/actuator/health via Caddy.
-      # Retry a few times to allow services to fully start after compose up.
+      # Health check runs on the VM against the local actuator endpoint to avoid
+      # depending on public DNS/Caddy routing. Retries for up to 3 minutes to
+      # allow Spring Boot to fully start. Prints API logs on failure.
       - name: Health check
-        run: |
-          sleep 20
-          curl --retry 6 --retry-delay 5 --retry-connrefused \
-            -sf http://${{ secrets.LIGHTSAIL_HOST }}/api/actuator/health \
-            | grep -q '"status":"UP"'
-=======
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Deploy and verify on VM
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_KEY }}
+          host: ${{ secrets.LIGHTSAIL_HOST }}
+          username: ${{ secrets.LIGHTSAIL_USER }}
+          key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
           script: |
-            set -euo pipefail
-            cd ${{ secrets.DEPLOY_PATH }}
-
-            echo "--- pulling images ---"
-            docker compose -f docker-compose.prod.yml pull
-
-            echo "--- starting services ---"
-            docker compose -f docker-compose.prod.yml up -d
-
-            echo "--- waiting for API health ---"
-            max=36          # 36 × 5 s = 3 min ceiling
+            max=36
             count=0
             until curl -sf http://localhost:8080/actuator/health | grep -q '"status":"UP"'; do
               count=$((count + 1))
               if [ "$count" -ge "$max" ]; then
                 echo "ERROR: API did not become healthy after $((max * 5)) seconds"
-                docker compose -f docker-compose.prod.yml logs api --tail=50
+                docker compose -f /opt/opsflow/docker-compose.prod.yml logs api --tail=50
                 exit 1
               fi
               echo "  attempt $count/$max — retrying in 5 s..."
               sleep 5
             done
             echo "API is UP"
->>>>>>> fbc8345 (fix: move deploy health check to VM-local actuator endpoint)

@@ -156,7 +156,7 @@ sequenceDiagram
 * Docker
 * Docker Compose
 * Caddy reverse proxy
-* CD/CD
+* CI/CD
 * GitHub Actions
 * GitHub Container Registry (GHCR)
 * Automated Docker image builds and deployment
@@ -267,42 +267,7 @@ http://localhost:5173
 
 ---
 
-# Deployment Architecture
-
-OpsFlow is deployed on an **AWS Lightsail Linux VM**.
-
-All services run in **Docker containers managed with Docker Compose**.
-
-Deployment architecture:
-
-``` mermaid
-flowchart TD
-
-  Dev[Developer Push to GitHub] --> GA[GitHub Actions CI Pipeline]
-
-  GA --> CI[Build + Test Backend]
-  GA --> FE[Build Frontend]
-  GA --> IMG[Build Docker Images]
-
-  IMG --> GHCR[Push Images to GitHub Container Registry]
-
-  GHCR --> DEPLOY[SSH Deploy to AWS Lightsail VM]
-
-  DEPLOY --> DC[Docker Compose Pull Latest Images]
-
-  DC --> API[API Container]
-  DC --> WORKER[Worker Container]
-  DC --> FRONTEND[Frontend Container]
-  DC --> DB[(PostgreSQL)]
-  DC --> REDIS[(Redis)]
-
-  FRONTEND --> CADDY[Caddy Reverse Proxy]
-  API --> CADDY
-
-  CADDY --> USER[User Browser]
-```
-
-CI/CD Pipeline
+CI/CD and Deployment Pipeline
 
 OpsFlow uses GitHub Actions to automate testing, container builds, and deployments.
 
@@ -334,6 +299,7 @@ The reverse proxy handles routing between the frontend and API services.
 
 ## Incident Dashboard
 ![Incident Timeline](docs/docs/screenshots/Screenshot%20(14).png)
+
 
 
 

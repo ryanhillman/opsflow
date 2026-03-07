@@ -290,6 +290,27 @@ PostgreSQL + Redis
 Worker Service
 ```
 
+CI/CD Pipeline
+
+OpsFlow uses GitHub Actions to automate testing, container builds, and deployments.
+
+Pipeline stages:
+
+1. Continuous Integration
+   - Build backend services
+   - Run backend tests
+   - Build frontend application
+   - Build Docker images
+
+2. Container Publishing
+   - Images are pushed to GitHub Container Registry (GHCR)
+
+3. Continuous Deployment
+   - GitHub Actions connects to the AWS Lightsail VM over SSH
+   - Docker Compose pulls the latest images
+   - Containers are restarted with the new versions
+   - Docker health checks verify that the API service is healthy before completing the deployment
+
 The reverse proxy handles routing between the frontend and API services.
 
 ---
@@ -301,6 +322,7 @@ The reverse proxy handles routing between the frontend and API services.
 
 ## Incident Dashboard
 ![Incident Timeline](docs/docs/screenshots/Screenshot%20(14).png)
+
 
 
 

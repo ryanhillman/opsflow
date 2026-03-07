@@ -26,6 +26,7 @@ public class SecurityConfig {
                                 "/error",
                                 "/favicon.ico",
                                 "/actuator/health",
+                                "/api/actuator/health",
                                 "/actuator/info",
                                 "/actuator/prometheus",
                                 "/api/v1/auth/**",

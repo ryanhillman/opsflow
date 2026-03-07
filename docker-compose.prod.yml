@@ -17,9 +17,7 @@ services:
     restart: unless-stopped
 
   api:
-    build:
-      context: ./backend/api
-      dockerfile: Dockerfile
+    image: ghcr.io/${GHCR_OWNER}/opsflow-api:${IMAGE_TAG:-latest}
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/opsflow
       SPRING_DATASOURCE_USERNAME: opsflow
@@ -30,9 +28,7 @@ services:
     restart: unless-stopped
 
   worker:
-    build:
-      context: ./backend/worker
-      dockerfile: Dockerfile
+    image: ghcr.io/${GHCR_OWNER}/opsflow-worker:${IMAGE_TAG:-latest}
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/opsflow
       SPRING_DATASOURCE_USERNAME: opsflow
@@ -44,9 +40,7 @@ services:
     restart: unless-stopped
 
   caddy:
-    build:
-      context: .
-      dockerfile: frontend/Dockerfile
+    image: ghcr.io/${GHCR_OWNER}/opsflow-frontend:${IMAGE_TAG:-latest}
     ports:
       - "80:80"
     depends_on:

@@ -64,6 +64,7 @@ flowchart TD
   W -. metrics .-> P
 ```
 
+
 ## Incident Event Flow (Outbox + Worker + SSE timeline):
 
 ```mermaid
@@ -299,6 +300,7 @@ The reverse proxy handles routing between the frontend and API services.
 
 ## Incident Dashboard
 ![Incident Timeline](docs/docs/screenshots/Screenshot%20(14).png)
+
 
 
 

@@ -12,7 +12,7 @@
 
 The project simulates a simplified version of tools like **PagerDuty** or **OpsGenie**, allowing teams to track operational incidents, manage services, and coordinate responses with real-time activity streams.
 
-The system emphasizes **modern backend architecture, multi-tenant design, real-time event streaming, and containerized deployment**.
+The system emphasizes **modern backend architecture, multi-tenant design, real-time event streaming, containerized deployment, and automated CI/CD pipelines for build, test, and deployment**.
 
 Live Demo: http://3.238.146.215 
 
@@ -157,6 +157,10 @@ sequenceDiagram
 * Docker
 * Docker Compose
 * Caddy reverse proxy
+* CD/CD
+* GitHub Actions
+* GitHub Container Registry (GHCR)
+* Automated Docker image builds and deployment
 
 ### Observability (Local Development)
 
@@ -165,9 +169,16 @@ sequenceDiagram
 
 ### Deployment
 
-* AWS Lightsail Linux VM
-* Dockerized services
-* Reverse proxy via Caddy
+OpsFlow is deployed to an AWS Lightsail Linux VM using a container-based deployment pipeline.
+
+CI/CD is implemented using GitHub Actions. Each push to the main branch:
+
+• Builds backend and frontend services  
+• Builds Docker images for api, worker, and frontend  
+• Publishes images to GitHub Container Registry (GHCR)  
+• Deploys the updated containers to the Lightsail VM over SSH  
+
+Docker Compose manages the running services on the VM, and container health checks ensure the API service is fully started before the deployment is considered successful.
 
 ---
 
@@ -290,6 +301,7 @@ The reverse proxy handles routing between the frontend and API services.
 
 ## Incident Dashboard
 ![Incident Timeline](docs/docs/screenshots/Screenshot%20(14).png)
+
 
 
 

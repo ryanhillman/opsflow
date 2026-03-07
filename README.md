@@ -4,8 +4,7 @@
 
 <img src="https://img.shields.io/badge/Backend-Spring%20Boot-brightgreen" />
 <img src="https://img.shields.io/badge/Frontend-React%20%2B%20TypeScript-blue" />
-<img src="https://img.shields.io/badge/Deployment-AWS%20Lightsail-orange?logo=amazonaws&logoColor=white" />
-
+![CI/CD](https://img.shields.io/badge/CI/CD-GitHub_Actions-success)
 </p>
 
 **OpsFlow** is a startup-style **incident management and runbook coordination platform** designed to showcase production-style SaaS architecture.
@@ -322,6 +321,7 @@ The reverse proxy handles routing between the frontend and API services.
 
 ## Incident Dashboard
 ![Incident Timeline](docs/docs/screenshots/Screenshot%20(14).png)
+
 
 
 
